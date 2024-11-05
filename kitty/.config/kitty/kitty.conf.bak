@@ -2601,7 +2601,7 @@
 
 
 # BEGIN_KITTY_THEME
-# One Dark
+# Catppuccin-Mocha
 include current-theme.conf
 # END_KITTY_THEME
 
@@ -2613,5 +2613,4 @@ bold_italic_font auto
 # END_KITTY_FONTS
 
 font_size 14.0
-background_opacity 0.95
 
