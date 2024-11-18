@@ -12,7 +12,7 @@
 
 `qmk compile -e CONVERT_TO=liatris`
 
-4. Enter bootloader: double press reset button.
+4. Flash for liatris:
 
-5. Copy .uf2 file that was generated in 3 to the new disk.
+`qmk flash -e CONVERT_TO=liatris`
 
