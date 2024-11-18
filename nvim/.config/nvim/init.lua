@@ -646,9 +646,10 @@ require("lazy").setup({
 						},
 					},
 				},
-				angularls = {},
+				angularls = {
+					filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx", "htmlangular" },
+				},
 			}
-
 			-- Ensure the servers and tools above are installed
 			--  To check the current status of installed tools and/or manually install
 			--  other tools, you can run
@@ -718,7 +719,8 @@ require("lazy").setup({
 				-- python = { "isort", "black" },
 				--
 				-- You can use 'stop_after_first' to run the first available formatter from the list
-				-- javascript = { "prettierd", "prettier", stop_after_first = true },
+				javascript = { "prettierd", "prettier", stop_after_first = true },
+				typescript = { "prettierd", "prettier", stop_after_first = true },
 			},
 		},
 	},
@@ -844,7 +846,7 @@ require("lazy").setup({
 		-- change the command in the config to whatever the name of that colorscheme is.
 		--
 		-- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-		"navarasu/onedark.nvim",
+		"olimorris/onedarkpro.nvim",
 		priority = 1000, -- Make sure to load this before all the other start plugins.
 		init = function()
 			-- Load the colorscheme here.
@@ -909,6 +911,7 @@ require("lazy").setup({
 		-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 		opts = {
 			ensure_installed = {
+				"angular",
 				"bash",
 				"c",
 				"diff",
@@ -918,6 +921,7 @@ require("lazy").setup({
 				"markdown",
 				"markdown_inline",
 				"query",
+				"scss",
 				"vim",
 				"vimdoc",
 			},
@@ -987,6 +991,21 @@ require("lazy").setup({
 		},
 	},
 })
+
+vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
+	pattern = { "*.component.html", "*.container.html" },
+	callback = function()
+		vim.treesitter.start(nil, "angular")
+	end,
+})
+
+vim.filetype.add({
+	pattern = {
+		[".*%.component%.html"] = "htmlangular", -- Sets the filetype to `htmlangular` if it matches the pattern
+	},
+})
+
+vim.cmd("runtime! ftplugin/html.vim!")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
