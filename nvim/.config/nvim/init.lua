@@ -91,7 +91,7 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = true
+vim.g.have_nerd_font = false
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -102,7 +102,7 @@ vim.g.have_nerd_font = true
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
-vim.opt.relativenumber = true
+-- vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = "a"
@@ -135,7 +135,6 @@ vim.opt.signcolumn = "yes"
 vim.opt.updatetime = 250
 
 -- Decrease mapped sequence wait time
--- Displays which-key popup sooner
 vim.opt.timeoutlen = 300
 
 -- Configure how new splits should be opened
@@ -267,19 +266,21 @@ require("lazy").setup({
 	-- which loads which-key before all the UI elements are loaded. Events can be
 	-- normal autocommands events (`:help autocmd-events`).
 	--
-	-- Then, because we use the `config` key, the configuration only runs
-	-- after the plugin has been loaded:
-	--  config = function() ... end
+	-- Then, because we use the `opts` key (recommended), the configuration runs
+	-- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
 	{ -- Useful plugin to show you pending keybinds.
 		"folke/which-key.nvim",
 		event = "VimEnter", -- Sets the loading event to 'VimEnter'
 		opts = {
+			-- delay between pressing a key and opening which-key (milliseconds)
+			-- this setting is independent of vim.opt.timeoutlen
+			delay = 0,
 			icons = {
 				-- set icon mappings to true if you have a Nerd Font
 				mappings = vim.g.have_nerd_font,
 				-- If you are using a Nerd Font: set icons.keys to an empty table which will use the
-				-- default whick-key.nvim defined Nerd Font icons, otherwise define a string table
+				-- default which-key.nvim defined Nerd Font icons, otherwise define a string table
 				keys = vim.g.have_nerd_font and {} or {
 					Up = "<Up> ",
 					Down = "<Down> ",
@@ -595,11 +596,12 @@ require("lazy").setup({
 
 			-- Change diagnostic symbols in the sign column (gutter)
 			-- if vim.g.have_nerd_font then
-			--   local signs = { Error = '', Warn = '', Hint = '', Info = '' }
+			--   local signs = { ERROR = '', WARN = '', INFO = '', HINT = '' }
+			--   local diagnostic_signs = {}
 			--   for type, icon in pairs(signs) do
-			--     local hl = 'DiagnosticSign' .. type
-			--     vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+			--     diagnostic_signs[vim.diagnostic.severity[type]] = icon
 			--   end
+			--   vim.diagnostic.config { signs = { text = diagnostic_signs } }
 			-- end
 
 			-- LSP servers and clients are able to communicate to each other what features they support.
@@ -633,8 +635,8 @@ require("lazy").setup({
 				--
 
 				lua_ls = {
-					-- cmd = {...},
-					-- filetypes = { ...},
+					-- cmd = { ... },
+					-- filetypes = { ... },
 					-- capabilities = {},
 					settings = {
 						Lua = {
@@ -646,10 +648,8 @@ require("lazy").setup({
 						},
 					},
 				},
-				angularls = {
-					filetypes = { "typescript", "html", "typescriptreact", "typescript.tsx", "htmlangular" },
-				},
 			}
+
 			-- Ensure the servers and tools above are installed
 			--  To check the current status of installed tools and/or manually install
 			--  other tools, you can run
@@ -719,8 +719,7 @@ require("lazy").setup({
 				-- python = { "isort", "black" },
 				--
 				-- You can use 'stop_after_first' to run the first available formatter from the list
-				javascript = { "prettierd", "prettier", stop_after_first = true },
-				typescript = { "prettierd", "prettier", stop_after_first = true },
+				-- javascript = { "prettierd", "prettier", stop_after_first = true },
 			},
 		},
 	},
@@ -911,7 +910,6 @@ require("lazy").setup({
 		-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
 		opts = {
 			ensure_installed = {
-				"angular",
 				"bash",
 				"c",
 				"diff",
@@ -921,7 +919,6 @@ require("lazy").setup({
 				"markdown",
 				"markdown_inline",
 				"query",
-				"scss",
 				"vim",
 				"vimdoc",
 			},
@@ -991,21 +988,6 @@ require("lazy").setup({
 		},
 	},
 })
-
-vim.api.nvim_create_autocmd({ "BufReadPost", "BufNewFile" }, {
-	pattern = { "*.component.html", "*.container.html" },
-	callback = function()
-		vim.treesitter.start(nil, "angular")
-	end,
-})
-
-vim.filetype.add({
-	pattern = {
-		[".*%.component%.html"] = "htmlangular", -- Sets the filetype to `htmlangular` if it matches the pattern
-	},
-})
-
-vim.cmd("runtime! ftplugin/html.vim!")
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
